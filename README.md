@@ -1,2 +1,2 @@
-# maqui
-Material Theme for Oqtane
+# Maqui
+Material Design Theme for Oqtane
