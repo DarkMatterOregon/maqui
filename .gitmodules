@@ -1,0 +1,4 @@
+[submodule "oqtane.framework"]
+	path = oqtane.framework
+	url = https://github.com/darkmatteroregon/oqtane.framework
+	branch = release/v5.0.1
