@@ -1,0 +1,77 @@
+@using DarkMatter.Module.Maqui.Services
+@using DarkMatter.Module.Maqui.Models
+
+@namespace DarkMatter.Module.Maqui
+@inherits ModuleBase
+@inject IMaquiService MaquiService
+@inject NavigationManager NavigationManager
+@inject IStringLocalizer<Index> Localizer
+
+@if (_Maquis == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <ActionLink Action="Add" Security="SecurityAccessLevel.Edit" Text="Add Maqui" ResourceKey="Add" />
+    <br />
+    <br />
+    @if (@_Maquis.Count != 0)
+    {
+        <Pager Items="@_Maquis">
+            <Header>
+                <th style="width: 1px;">&nbsp;</th>
+                <th style="width: 1px;">&nbsp;</th>
+                <th>@Localizer["Name"]</th>
+            </Header>
+            <Row>
+                <td><ActionLink Action="Edit" Parameters="@($"id=" + context.MaquiId.ToString())" ResourceKey="Edit"  /></td>
+                <td><ActionDialog Header="Delete Maqui" Message="Are You Sure You Wish To Delete This Maqui?" Action="Delete" Security="SecurityAccessLevel.Edit" Class="btn btn-danger" OnClick="@(async () => await Delete(context))" ResourceKey="Delete"  /></td>
+                <td>@context.Name</td>
+            </Row>
+        </Pager>
+    }
+    else
+    {
+        <p>@Localizer["Message.DisplayNone"]</p>
+    }
+}
+
+@code {
+    public override List<Resource> Resources => new List<Resource>()
+    {
+        new Resource { ResourceType = ResourceType.Stylesheet, Url = ModulePath() + "Module.css" },
+        new Resource { ResourceType = ResourceType.Script, Url = ModulePath() + "Module.js" }
+    };
+
+    List<Maqui> _Maquis;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _Maquis = await MaquiService.GetMaquisAsync(ModuleState.ModuleId);
+        }
+        catch (Exception ex)
+        {
+            await logger.LogError(ex, "Error Loading Maqui {Error}", ex.Message);
+            AddModuleMessage(Localizer["Message.LoadError"], MessageType.Error);
+        }
+    }
+
+    private async Task Delete(Maqui Maqui)
+    {
+        try
+        {
+            await MaquiService.DeleteMaquiAsync(Maqui.MaquiId, ModuleState.ModuleId);
+            await logger.LogInformation("Maqui Deleted {Maqui}", Maqui);
+            _Maquis = await MaquiService.GetMaquisAsync(ModuleState.ModuleId);
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            await logger.LogError(ex, "Error Deleting Maqui {Maqui} {Error}", Maqui, ex.Message);
+            AddModuleMessage(Localizer["Message.DeleteError"], MessageType.Error);
+        }
+    }
+}

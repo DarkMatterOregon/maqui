@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <Version>1.0.0</Version>
+    <Product>DarkMatter.Module.Maqui</Product>
+    <Authors>DarkMatter</Authors>
+    <Company>DarkMatter</Company>
+    <Description>Sample Modules for the Maqui Theme</Description>
+    <Copyright>DarkMatter</Copyright>
+    <AssemblyName>DarkMatter.Module.Maqui.Server.Oqtane</AssemblyName>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="wwwroot\_content\**\*.*" />
+    <None Include="wwwroot\_content\**\*.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Localization" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\oqtane.framework\Oqtane.Server\Oqtane.Server.csproj" />
+    <ProjectReference Include="..\..\oqtane.framework\Oqtane.Shared\Oqtane.Shared.csproj" />
+    <ProjectReference Include="..\Shared\DarkMatter.Module.Maqui.Shared.csproj" />
+  </ItemGroup>
+</Project>

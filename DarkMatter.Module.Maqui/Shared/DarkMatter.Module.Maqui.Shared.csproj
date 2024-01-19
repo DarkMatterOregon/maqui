@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>    
+    <Version>1.0.0</Version>
+    <Product>DarkMatter.Module.Maqui</Product>
+    <Authors>DarkMatter</Authors>
+    <Company>DarkMatter</Company>
+    <Description>Sample Modules for the Maqui Theme</Description>
+    <Copyright>DarkMatter</Copyright>
+    <AssemblyName>DarkMatter.Module.Maqui.Shared.Oqtane</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\oqtane.framework\Oqtane.Shared\Oqtane.Shared.csproj" />
+  </ItemGroup>
+
+</Project>
