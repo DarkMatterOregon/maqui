@@ -1,0 +1,90 @@
+@namespace DarkMatter.Theme.Maqui
+@inherits ThemeBase
+@inject ISettingService SettingService
+@inject NavigationManager NavigationManager
+
+<MudThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar Elevation="0">
+        <MudIconButton Icon="@MB.Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <MudSpacer />
+        @if (UserSecurity.IsAuthorized(PageState.User, RoleNames.Admin))
+        {
+            if (PageState.EditMode)
+            {
+                <MudIconButton Icon="@MudBlazor.Icons.Material.Filled.Edit" Color="Color.Inherit" Edge="Edge.End" OnClick="@(() => ToggleEditMode(PageState.EditMode))" />
+            }
+            else
+            {
+                <MudIconButton Icon="@MudBlazor.Icons.Material.Outlined.Edit" Color="Color.Inherit" Edge="Edge.End" OnClick="@(() => ToggleEditMode(PageState.EditMode))" />
+            }
+            <MudIconButton Icon="@MudBlazor.Icons.Material.Filled.Settings" Color="Color.Inherit" Edge="Edge.End" OnClick="@((e) => Settings())" />
+        }
+    </MudAppBar>
+    <MudDrawer Open="true">
+
+    </MudDrawer>
+    <MudMainContent>
+         <MudGrid>
+            <MudItem xs="12">
+                <EditablePane Name="@PaneNames.Admin" />
+            </MudItem>
+            <MudItem xs="12">
+                <EditablePane Name="Content" />
+            </MudItem>
+        </MudGrid>
+    </MudMainContent>
+</MudLayout>
+
+<MudLayout>
+    <MudMainContent>
+        <Pane Name="@PaneNames.Admin" />
+        <Pane Name="Content" />
+    </MudMainContent>
+</MudLayout>
+
+
+@code {
+    public override string Name => "Maqui Appbar & Drawer";
+
+    public override string Panes => PaneNames.Admin + ", Content";
+    
+    private bool _login = true;
+    private bool _register = true;
+
+    bool _drawerOpen = true;
+
+    protected override void OnParametersSet()
+    {
+        try
+        {
+            var settings = SettingService.MergeSettings(PageState.Site.Settings, PageState.Page.Settings);
+            _login = bool.Parse(SettingService.GetSetting(settings, GetType().Namespace + ":Login", "true"));
+            _register = bool.Parse(SettingService.GetSetting(settings, GetType().Namespace + ":Register", "true"));
+        }
+        catch
+        {
+            // error loading theme settings
+        }
+    }
+
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    void ToggleEditMode(bool editMode)
+    {
+        PageState.EditMode = !editMode;
+
+        NavigationManager.NavigateTo(NavigateUrl(PageState.Page.Path, "edit=" + ((PageState.EditMode) ? "1" : "0")));
+    }
+
+    void Settings()
+    {
+        NavigationManager.NavigateTo("/admin");
+    }
+}

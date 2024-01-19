@@ -1,0 +1,38 @@
+@namespace DarkMatter.Theme.Maqui
+@inherits ThemeBase
+@inject ISettingService SettingService
+
+<MudThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudMainContent>
+        <Pane Name="@PaneNames.Admin" />
+        <Pane Name="Content" />
+    </MudMainContent>
+</MudLayout>
+
+
+@code {
+    public override string Name => "Maqui Basic";
+
+    public override string Panes => PaneNames.Admin + ", Content";
+    
+    private bool _login = true;
+    private bool _register = true;
+
+    protected override void OnParametersSet()
+    {
+        try
+        {
+            var settings = SettingService.MergeSettings(PageState.Site.Settings, PageState.Page.Settings);
+            _login = bool.Parse(SettingService.GetSetting(settings, GetType().Namespace + ":Login", "true"));
+            _register = bool.Parse(SettingService.GetSetting(settings, GetType().Namespace + ":Register", "true"));
+        }
+        catch
+        {
+            // error loading theme settings
+        }
+    }
+}

@@ -1,0 +1,36 @@
+@inherits ThemeControlBase
+@inject IDialogService DialogService
+@inject NavigationManager NavigationManager
+
+
+<div @attributes="@AdditionalAttributes">
+    <Pane Name="@Name" />
+</div>
+
+@if (UserSecurity.IsAuthorized(PageState.User, RoleNames.Admin))
+{
+    if (PageState.EditMode)
+    {
+        <MudIconButton Icon="@MudBlazor.Icons.Material.Outlined.PostAdd" OnClick="@(async () => await Add())" />
+    }
+}
+
+@code {
+    [Parameter]
+    public string Name { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object> AdditionalAttributes { get; set; }
+
+    async Task Add()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+        var parameters = new DialogParameters() { ["PaneName"] = Name };
+        var dialog = DialogService.Show<AddModuleDialog>("Add Module", parameters, options);
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            NavigationManager.NavigateTo(NavigateUrl());
+        }
+    }
+}

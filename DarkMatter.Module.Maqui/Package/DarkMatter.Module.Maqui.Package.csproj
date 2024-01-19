@@ -14,8 +14,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Client\DarkMatter.Module.Maqui.Client.csproj" />
-    <ProjectReference Include="..\Server\DarkMatter.Module.Maqui.Server.csproj" />
-    <ProjectReference Include="..\Shared\DarkMatter.Module.Maqui.Shared.csproj" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

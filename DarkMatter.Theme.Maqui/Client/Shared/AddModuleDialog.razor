@@ -1,0 +1,94 @@
+@inherits ThemeControlBase
+@inject IModuleDefinitionService ModuleDefinitionService
+@inject IModuleService ModuleService
+@inject IPageModuleService PageModuleService
+
+<MudDialog >
+    <DialogContent>
+        <MudSelect T="string"
+			@bind-Value="ModuleDefinitionName"
+            Label="Module" 
+			AnchorOrigin="Origin.BottomCenter"
+			FullWidth="true"
+			Variant="Variant.Outlined">
+			@foreach (ModuleDefinition module in _commonModuleDefinitions)
+			{
+				<MudSelectItem Value="@module.ModuleDefinitionName">@module.Name</MudSelectItem>
+			}
+        </MudSelect>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="@(async () => await Submit())">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
+	[Parameter] public string PaneName { get; set; }
+
+	protected string ModuleDefinitionName { get; private set; } = "-";
+	protected string ContainerType { get; private set; }
+	private List<Module> _modules = new List<Module>();
+	private List<string> _categories = new List<string>();
+	private List<ModuleDefinition> _allModuleDefinitions = new();
+	private List<ModuleDefinition> _commonModuleDefinitions = new();
+
+	protected override async Task OnInitializedAsync()
+	{
+	}
+
+	protected override async Task OnParametersSetAsync()
+	{
+		if (UserSecurity.IsAuthorized(PageState.User, PermissionNames.Edit, PageState.Page.Permissions))
+		{
+
+
+			ContainerType = PageState.Page.DefaultContainerType;
+			_allModuleDefinitions = await ModuleDefinitionService.GetModuleDefinitionsAsync(PageState.Site.SiteId);
+			_commonModuleDefinitions = _allModuleDefinitions.Where(item => item.Categories.Contains("Common")).ToList();
+
+		}
+	}
+
+	async Task Submit() {
+		await AddModule();
+		MudDialog.Close(DialogResult.Ok(true));
+	}
+
+	void Cancel() => MudDialog.Cancel();
+
+	private async Task AddModule()
+	{	
+		Module module = new Module();
+		module.SiteId = PageState.Site.SiteId;
+		module.PageId = PageState.Page.PageId;
+		module.ModuleDefinitionName = ModuleDefinitionName;
+		module.AllPages = false;
+
+		// copy page permissionslist to module
+		module.PermissionList = new List<Permission>(PageState.Page.PermissionList);
+		module.PermissionList.ForEach(item => {
+			item.PermissionId = default; // fresh permission IDs for the module.
+			item.EntityId = module.ModuleId;
+			item.EntityName = EntityNames.Module;
+		});
+
+		module = await ModuleService.AddModuleAsync(module);
+		string ModuleId = module.ModuleId.ToString();
+
+		var pageModule = new PageModule
+			{
+				PageId = PageState.Page.PageId,
+				ModuleId = int.Parse(ModuleId),
+				Title = _allModuleDefinitions.FirstOrDefault(item => item.ModuleDefinitionName == ModuleDefinitionName)?.Name
+			};
+
+		pageModule.Pane = PaneName;
+		pageModule.Order = int.MaxValue;
+		pageModule.ContainerType = ContainerType;  // could make this OE.Theme.LHB.ContainerLHB, OE.Theme.LHB.Client.Oqtane
+        
+		await PageModuleService.AddPageModuleAsync(pageModule);
+		await PageModuleService.UpdatePageModuleOrderAsync(pageModule.PageId, pageModule.Pane);
+
+	}
+}
