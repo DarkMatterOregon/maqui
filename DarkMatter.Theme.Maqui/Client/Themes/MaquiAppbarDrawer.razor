@@ -24,8 +24,8 @@
             <MudIconButton Icon="@MudBlazor.Icons.Material.Filled.Settings" Color="Color.Inherit" Edge="Edge.End" OnClick="@((e) => Settings())" />
         }
     </MudAppBar>
-    <MudDrawer Open="true">
-
+    <MudDrawer @bind-Open="_drawerOpen">
+        <NavMenu />
     </MudDrawer>
     <MudMainContent>
          <MudGrid>

@@ -1,3 +1,14 @@
-﻿<MudNavMenu>
+﻿@inherits ThemeControlBase
+
+<MudNavMenu>
     @*todo - read the pages and build a menu*@
+    <MudNavLink Icon="@MudBlazor.Icons.Material.Outlined.Home" Href="/" Match="NavLinkMatch.All">Home</MudNavLink>
+    <MudNavLink Icon="@MudBlazor.Icons.Material.Outlined.MenuBook" Href="catalog">Todo</MudNavLink>
+    <MudNavLink Icon="@MudBlazor.Icons.Material.Outlined.ShoppingCart" Href="cart">Read</MudNavLink>
+    <MudNavGroup Title="Page Data" Expanded="false">
+        <MudNavLink Icon="@MudBlazor.Icons.Material.Outlined.Payments" Href="products">From Oqtane</MudNavLink>
+        <MudNavLink Icon="@MudBlazor.Icons.Material.Outlined.OndemandVideo" Href="courses">With Login</MudNavLink>
+    </MudNavGroup>
+    <MudSpacer/>
+    <MudNavLink Icon="@MudBlazor.Icons.Material.Outlined.AccountCircle" Href="login" Match="NavLinkMatch.Prefix">Login</MudNavLink>
 </MudNavMenu>
